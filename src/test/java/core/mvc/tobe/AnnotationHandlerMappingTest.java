@@ -83,11 +83,12 @@ public class AnnotationHandlerMappingTest {
     }
 
     @Test
-    @DisplayName("요청 url 이 동일하더라도 파라미터가 다르면 등록한다")
+    @DisplayName("요청 url 과 method 가 같으면 엔트리 포인트 등록시 예외가 발생한다")
     void registerSameRequestUrl() {
-        AnnotationHandlerMapping handlerMapper = new AnnotationHandlerMapping(BASE_PACKAGE + ".controller");
-        handlerMapper.initialize();
-
-        assertThat(handlerMapper.getNumOfHandler()).isEqualTo(2);
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    AnnotationHandlerMapping mapping = new AnnotationHandlerMapping("core.mvc.controller");
+                    mapping.initialize();
+                });
     }
 }
