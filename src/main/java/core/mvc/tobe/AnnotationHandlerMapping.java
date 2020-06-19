@@ -65,16 +65,19 @@ public class AnnotationHandlerMapping implements RequestHandlerMapping {
         getRequestMethods(requestMapping)
                 .forEach(requestMethod ->
                         {
+                            HandlerKey key = new HandlerKey(requestMapping.value(), requestMethod);
                             HandlerExecution handlerExecution = new HandlerExecution(method, instance);
-                            HandlerKey key = new HandlerKey(
-                                    requestMapping.value(),
-                                    requestMethod,
-                                    handlerExecution.getParameters()
-                            );
+                            checkDuplication(requestMapping, key);
 
                             handlerExecutions.put(key, handlerExecution);
                         }
                 );
+    }
+
+    private void checkDuplication(RequestMapping requestMapping, HandlerKey key) {
+        if (handlerExecutions.containsKey(key)) {
+            throw new IllegalArgumentException("Method duplication check : " + requestMapping.value());
+        }
     }
 
     private List<RequestMethod> getRequestMethods(final RequestMapping requestMapping) {

@@ -1,7 +1,6 @@
 package core.mvc.tobe;
 
 import core.annotation.web.RequestMethod;
-import core.mvc.param.Parameters;
 import org.springframework.http.server.PathContainer;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
@@ -17,13 +16,12 @@ public class HandlerKey implements Comparable<HandlerKey> {
     private final String url;
     private final PathPattern pathPattern;
     private final RequestMethod requestMethod;
-    private final Parameters parameters; //동일한 request url 동일한 method 일경우에도 파라미터 값이 다를 수 있으므로 추가
 
     static {
         PATH_PATTERN_PARSER.setMatchOptionalTrailingSeparator(true);
     }
 
-    public HandlerKey(final String url, final RequestMethod requestMethod, final Parameters parameters) {
+    public HandlerKey(final String url, final RequestMethod requestMethod) {
         if (Objects.isNull(url) || Objects.isNull(requestMethod)) {
             throw new IllegalArgumentException("Fail to create HandlerKey cuz there is null argument");
         }
@@ -31,11 +29,6 @@ public class HandlerKey implements Comparable<HandlerKey> {
         this.url = url;
         this.pathPattern = PATH_PATTERN_PARSER.parse(url);
         this.requestMethod = requestMethod;
-        this.parameters = parameters;
-    }
-
-    public HandlerKey(final String url, final RequestMethod requestMethod) {
-        this(url, requestMethod, null);
     }
 
     public String getUrl() {
@@ -73,8 +66,7 @@ public class HandlerKey implements Comparable<HandlerKey> {
 
         return new HandlerKey(
                 request.getRequestURI(),
-                RequestMethod.valueOf(request.getMethod().toUpperCase()),
-                null
+                RequestMethod.valueOf(request.getMethod().toUpperCase())
         );
     }
 
@@ -111,8 +103,7 @@ public class HandlerKey implements Comparable<HandlerKey> {
         if (o == null || getClass() != o.getClass()) return false;
         HandlerKey that = (HandlerKey) o;
         return Objects.equals(url, that.url) &&
-                requestMethod == that.requestMethod &&
-                Objects.equals(parameters, that.parameters);
+                requestMethod == that.requestMethod;
     }
 
     @Override
